@@ -11,10 +11,10 @@
 
 void main(int argc, void** argv)
 {
-	rvm_t rvm = rvm_init("/media/DATA/linuxworkspace/RVM");
+	rvm_t rvm = rvm_init("rvm_segments");
 	char* buffer = rvm_map(rvm, "mysegment", 1000);
 	char* buffer2 = rvm_map(rvm, "myothersegment", 1000);
-	printf("Contents of buffer 2 %s\n", buffer2);
+	/*printf("Contents of buffer 2 %s\n", buffer2);
 	char* segbase[2];
 	segbase[0] = buffer;
 	segbase[1] = buffer2;
@@ -26,7 +26,7 @@ void main(int argc, void** argv)
 	printf("Contents of buffer 2 after abort are %s\n", buffer2);
 	printf("The transaction id is: %d\n", tid);
 	rvm_unmap(rvm, buffer);
-	//rvm_destroy(rvm, "mysegment");
+	//rvm_destroy(rvm, "mysegment");*/
 }
 
 

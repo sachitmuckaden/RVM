@@ -16,18 +16,18 @@ int main(int argc, char **argv)
 {
      rvm_t rvm;
      char *seg;
-     char *segs[1];
+     void *segs[1];
      trans_t trans;
      
-     rvm = rvm_init("/media/DATA/linuxworkspace/RVM");
+	 rvm = rvm_init(__FILE__ ".d");
      
      rvm_destroy(rvm, "testseg");
      
      segs[0] = (char *) rvm_map(rvm, "testseg", 10000);
-     seg = segs[0];
+	 seg = (char *) segs[0];
 
      /* write some data and commit it */
-     trans = rvm_begin_trans(rvm, 1, (void**) segs);
+     trans = rvm_begin_trans(rvm, 1, segs);
      rvm_about_to_modify(trans, seg, 0, 100);
      sprintf(seg, TEST_STRING1);
      
@@ -37,7 +37,7 @@ int main(int argc, char **argv)
      rvm_commit_trans(trans);
 
      /* start writing some different data, but abort */
-     trans = rvm_begin_trans(rvm, 1, (void**) segs);
+     trans = rvm_begin_trans(rvm, 1, segs);
      rvm_about_to_modify(trans, seg, 0, 100);
      sprintf(seg, TEST_STRING2);
      
@@ -49,15 +49,15 @@ int main(int argc, char **argv)
 
      /* test that the data was restored */
      if(strcmp(seg+OFFSET2, TEST_STRING1)) {
-	  printf("ERROR: second hello is incorrect (%s)\n",
-		 seg+OFFSET2);
-	  exit(2);
+     	  printf("ERROR: second hello is incorrect (%s)\n",
+     		 seg+OFFSET2);
+     	  exit(2);
      }
 
      if(strcmp(seg, TEST_STRING1)) {
-	  printf("ERROR: first hello is incorrect (%s)\n",
-		 seg);
-	  exit(2);
+     	  printf("ERROR: first hello is incorrect (%s)\n",
+     		 seg);
+     	  exit(2);
      }
      
 

@@ -17,8 +17,8 @@ void proc1()
      rvm_t rvm;
      trans_t trans;
      char* segs[1];
-     
-     rvm = rvm_init("/media/DATA/linuxworkspace/RVM");
+
+	 rvm = rvm_init(__FILE__ ".d");
      rvm_destroy(rvm, "testseg");
      segs[0] = (char *) rvm_map(rvm, "testseg", 10000);
 
@@ -30,7 +30,7 @@ void proc1()
      
      rvm_about_to_modify(trans, segs[0], OFFSET2, 100);
      sprintf(segs[0]+OFFSET2, TEST_STRING);
-     
+   
      rvm_commit_trans(trans);
 
      abort();
@@ -43,17 +43,16 @@ void proc2()
      char* segs[1];
      rvm_t rvm;
      
-     rvm = rvm_init("/media/DATA/linuxworkspace/RVM");
-     printf("Now writing to testseg\n");
+	 rvm = rvm_init(__FILE__ ".d");
+
      segs[0] = (char *) rvm_map(rvm, "testseg", 10000);
-     printf("The contents of the mapped segment are %s\n", segs[0]);
      if(strcmp(segs[0], TEST_STRING)) {
-	  printf("ERROR: first hello not present\n");
-	  exit(2);
+     	  printf("ERROR: first hello not present\n");
+     	  exit(2);
      }
      if(strcmp(segs[0]+OFFSET2, TEST_STRING)) {
-	  printf("ERROR: second hello not present\n");
-	  exit(2);
+     	  printf("ERROR: second hello not present\n");
+     	  exit(2);
      }
 
      printf("OK\n");
@@ -64,7 +63,6 @@ void proc2()
 int main(int argc, char **argv)
 {
      int pid;
-
      pid = fork();
      if(pid < 0) {
 	  perror("fork");

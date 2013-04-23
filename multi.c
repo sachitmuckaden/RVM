@@ -23,8 +23,8 @@ void proc1()
      rvm_t rvm;
      char* segs[2];
      trans_t trans;
-     
-     rvm = rvm_init("/media/DATA/linuxworkspace/RVM");
+
+	 rvm = rvm_init(__FILE__ ".d");
 
      rvm_destroy(rvm, SEGNAME0);
      rvm_destroy(rvm, SEGNAME1);
@@ -50,7 +50,7 @@ void proc2()
      rvm_t rvm;
      char *segs[2];
 
-     rvm = rvm_init("/media/DATA/linuxworkspace/RVM");
+	 rvm = rvm_init(__FILE__ ".d");
      segs[0] = (char*) rvm_map(rvm, SEGNAME0, 1000);
      segs[1] = (char*) rvm_map(rvm, SEGNAME1, 1000);
 

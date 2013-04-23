@@ -22,7 +22,7 @@ int main(int argc, char **argv)
      trans_t trans;
 
      /* initialize */
-     rvm = rvm_init("/media/DATA/linuxworkspace/RVM");
+	 rvm = rvm_init(__FILE__ ".d");
 
      rvm_destroy(rvm, SEGNAME0);
      rvm_destroy(rvm, SEGNAME1);

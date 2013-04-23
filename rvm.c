@@ -32,6 +32,9 @@ rvm_t rvm_init(const char *directory)
 		segid_num = 0;
 		rvmqueueinit = 1;
 	}
+	char temp[100];
+	sprintf(temp, "%s", directory);
+	printf("Initializing in directory %s\n", temp);
 	if(!(stat(directory, &sb) == 0 && S_ISDIR(sb.st_mode)))
 	{
 	    printf("ERROR: Directory does not exist!\n");
@@ -42,7 +45,7 @@ rvm_t rvm_init(const char *directory)
 	rvm->rvmid = rvmid_num++;
 	initializeQueue(&rvm->segmentlist);
 	//initializeQueue(&rvm->translist);
-	rvm->dir = (char*)malloc(strlen(directory)*sizeof(char));
+	rvm->dir = (char*)malloc((strlen(directory))*sizeof(char));
 	memset(rvm->dir, 0 , strlen(directory));
 	strncpy(rvm->dir, directory, strlen(directory));
 	if(rvmqueue.count!=0)
@@ -123,8 +126,11 @@ void *rvm_map(rvm_t rvm, const char *segname, int size_to_create)
 			 exit(1);
 	   }
    }
-   char* name = (char*)malloc(sizeof(char)*strlen(segname));
+   char* name = (char*)malloc(strlen(segname)+1);
+   memset(name,0,strlen(segname)+1);
+   /*printf("Length of name is %d\n", strlen(segname));*/
    strncpy(name, segname, strlen(segname));
+   /*printf("The provided segname is %s\nThe name of the segment is %s\n", segname, name);*/
 
    segment_cb* segment = (segment_cb*) malloc(sizeof(segment_cb));
 
@@ -323,8 +329,10 @@ void rvm_commit_trans(trans_t tid)
 		printf("Writing to meta log file %s %d %d\n", oper->segname, oper->offset, oper->size);
 		fprintf(fp1, "%s %d %d\n", oper->segname, oper->offset, oper->size);
 		void* buffer;
-		buffer = malloc(oper->size*sizeof(char));
+		buffer = malloc((oper->size+1));
+		memset(buffer, 0, oper->size+1);
 		memcpy(buffer, oper->base+oper->offset, oper->size);
+		//memcpy(buffer+oper->size, '\0', 1);
 		printf("Writing to redo log %s\n", buffer);
 		fwrite(buffer, oper->size, 1, fp2);
 		free(buffer);
@@ -406,7 +414,8 @@ void rvm_truncate_log(rvm_t rvm)
     	size = atoi(temp2);
     	printf("%s %d %d\n", segname, offset, size);
     	void* buffer, *writebuffer;
-    	buffer = (char*)malloc(size*sizeof(char));
+    	buffer = (char*)malloc((size+1));
+    	memset(buffer, 0, size+1);
     	/*writebuffer = malloc(size*sizeof(char));*/
     	char fullpath[100], fullpathseg[100];
     	sprintf(fullpath, "%s/redolog.log", rvmt->dir);
