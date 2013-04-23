@@ -154,6 +154,7 @@ void rvm_unmap(rvm_t rvm, void *segbase)
 	if(rvmc->segmentlist.count == 0)
 	{
 		printf("ERROR: Segment is not mapped in memory\n");
+		//emptylogfiles(rvmc->dir);
 		exit(0);
 	}
 	node* segnode = rvmc->segmentlist.front;
@@ -176,6 +177,9 @@ void rvm_unmap(rvm_t rvm, void *segbase)
 	if(!found)
 	{
 		printf("ERROR: Attempt to unmap segment that is not currently mapped\n");
+		//emptylogfiles(rvmc->dir);
+		exit(0);
+
 	}
 }
 
@@ -189,6 +193,8 @@ void rvm_destroy(rvm_t rvm, const char *segname)
 		if(strcmp(segment->segname,segname)==0)
 		{
 			printf("ERROR: Attempt to destroy segment that is currently mapped in memory\n");
+			//emptylogfiles(rvmc->dir);
+			exit(0);
 			return;
 		}
 		segnode = segnode->next;
@@ -249,7 +255,8 @@ void rvm_about_to_modify(trans_t tid, void *segbase, int offset, int size)
 	trans_cb* trans = (trans_cb*)findInQueue(&trans_queue, tid, TYPE_TRANS);
 	if(trans == NULL)
 	{
-		printf("Invalid transaction id: %d\n", tid);
+		printf("ERROR: Invalid transaction id: %d\n", tid);
+		exit(0);
 		return;
 	}
 	node* segnode = trans->segmentlist.front;
@@ -264,6 +271,7 @@ void rvm_about_to_modify(trans_t tid, void *segbase, int offset, int size)
 			if(segment->segsize<(offset+size))
 			{
 				printf("ERROR: Specified range is invalid for segment %s\n", segment->segname);
+				exit(0);
 				return;
 			}
 			break;
@@ -273,7 +281,8 @@ void rvm_about_to_modify(trans_t tid, void *segbase, int offset, int size)
 
 	if(!found)
 	{
-		printf("Invalid segment\n");
+		printf("ERROR: Segment was not specified in begin transaction\n");
+		exit(0);
 		return;
 	}
 
@@ -291,6 +300,7 @@ void rvm_about_to_modify(trans_t tid, void *segbase, int offset, int size)
 			if((segstart<opstart&&segend>opstart)||(segstart<opend&&segend>opend)||(segstart==opstart)||segend==opend)
 			{
 				printf("ERROR: Specified range is being modified by a transaction: %d\n", op->transid);
+				exit(0);
 				return;
 			}
 			opnode = opnode->next;
